@@ -1013,6 +1013,10 @@ struct ufs_hba {
 	struct ufs_desc_size desc_size;
 	atomic_t scsi_block_reqs_cnt;
 
+#ifdef CONFIG_UFS_CARD_RESET
+	void*   card_reset_info;
+#endif
+
 	struct device		bsg_dev;
 	struct request_queue	*bsg_queue;
 

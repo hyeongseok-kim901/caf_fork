@@ -196,3 +196,18 @@ config SCSI_UFS_CRYPTO_QTI
 	 Enable Vendor Crypto Engine Support in UFS
 	 Enabling this allows kernel to use UFS crypto operations defined
 	 and implemented by QTI.
+
+config UFS_CARD_RESET
+	bool "Enable ufs hw device reset with gpio control"
+	depends on SCSI_UFSHCD && GPIOLIB
+	default n
+	help
+	  If you want to use this feature, dedicated gpio pin for ufs reset
+	  that is default pull-up(high) to UFS_RES_n should be implemented.
+
+config UFS_CARD_RESET_DEBUGFS
+	bool "Enable ufs hw device reset with gpio control(DEBUGFS)"
+	depends on UFS_CARD_RESET && DEBUG_FS
+	default n
+	help
+	  You can do ufs card reset with debugfs - gpio control

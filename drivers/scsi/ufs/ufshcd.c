@@ -55,6 +55,10 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/ufs.h>
 
+#ifdef CONFIG_UFS_CARD_RESET
+#include "ufs-reset-gpio.h"
+#endif
+
 #define UFSHCD_ENABLE_INTRS	(UTP_TRANSFER_REQ_COMPL |\
 				 UTP_TASK_REQ_COMPL |\
 				 UFSHCD_ERROR_MASK)
@@ -7846,6 +7850,11 @@ reinit:
 		int err;
 
 		ufshcd_vops_device_reset(hba);
+#ifdef CONFIG_UFS_CARD_RESET
+		if (UFSHCD_STATE_RESET == hba->ufshcd_state && ufshcd_eh_in_progress(hba)) {
+			ufs_card_reset(hba, false);
+		}
+#endif
 
 		/* Reset the host controller */
 		spin_lock_irqsave(hba->host->host_lock, flags);
@@ -9538,8 +9547,16 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
 	 */
 	ufshcd_set_ufs_dev_active(hba);
 
+#ifdef CONFIG_UFS_CARD_RESET
+	ufs_card_reset_init(hba);
+#endif
+
 	async_schedule(ufshcd_async_scan, hba);
 	ufs_sysfs_add_nodes(hba->dev);
+
+#ifdef CONFIG_UFS_CARD_RESET_DEBUGFS
+	ufs_card_reset_add_debugfs(hba);
+#endif
 
 	return 0;
 
