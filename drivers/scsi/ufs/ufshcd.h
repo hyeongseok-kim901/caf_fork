@@ -775,6 +775,9 @@ struct ufs_hba {
 	enum ufs_pm_level spm_lvl;
 	struct device_attribute rpm_lvl_attr;
 	struct device_attribute spm_lvl_attr;
+#ifdef CONFIG_LFS_UFSDBG_TUNABLES
+	void *ufsdbg_tunables;
+#endif
 	int pm_op_in_progress;
 
 	/* Auto-Hibernate Idle Timer register value */

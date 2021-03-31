@@ -26,6 +26,12 @@
 #include "ufs_quirks.h"
 #include "ufshcd-crypto-qti.h"
 
+#ifdef CONFIG_LFS_UFSDBG_TUNABLES
+#define IMPORT_TO_UFSQCOM
+#include "ufsdbg-tunables.c"
+#undef IMPORT_TO_UFSQCOM
+#endif
+
 #define UFS_QCOM_DEFAULT_DBG_PRINT_EN	\
 	(UFS_QCOM_DBG_PRINT_REGS_EN | UFS_QCOM_DBG_PRINT_TEST_BUS_EN)
 
@@ -482,6 +488,10 @@ static int ufs_qcom_host_reset(struct ufs_hba *hba)
 		enable_irq(hba->irq);
 		hba->is_irq_enabled = true;
 	}
+
+#ifdef CONFIG_LFS_UFSDBG_TUNABLES
+	ufsdbg_tunables_refclk_drv_apply(hba);
+#endif
 
 out:
 	return ret;
@@ -2885,6 +2895,11 @@ static int ufs_qcom_init(struct ufs_hba *hba)
 	ufs_qcom_save_host_ptr(hba);
 
 	ufs_qcom_qos_init(hba);
+
+#ifdef CONFIG_LFS_UFSDBG_TUNABLES
+	ufsdbg_tunables_init(hba);
+#endif
+
 	goto out;
 
 out_disable_vccq_parent:
